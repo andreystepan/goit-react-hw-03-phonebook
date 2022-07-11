@@ -4,6 +4,8 @@ import { ContactForm } from './ContactForm';
 import { ContactList } from './Contacts/ContactList';
 import { Filter } from './Filter';
 
+const LS_KEY = 'contacts';
+
 export class App extends Component {
   state = {
     contacts: [
@@ -14,6 +16,13 @@ export class App extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const parsedContacts = JSON.parse(localStorage.getItem(LS_KEY));
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
 
   addContact = ({ name, number }) => {
     const existingContact = this.state.contacts.find(
@@ -33,6 +42,11 @@ export class App extends Component {
       contacts: [contact, ...prevState.contacts],
     }));
   };
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem(LS_KEY, JSON.stringify(this.state.contacts));
+    }
+  }
 
   changeFilter = e => {
     this.setState({ filter: e.currentTarget.value });
